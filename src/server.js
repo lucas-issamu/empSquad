@@ -1,6 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const fs = require('../Enterprise/connection')
+const fs = require('../src/connection')
 const app = express()
 
 app.use(bodyParser.json());
