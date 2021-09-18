@@ -1,67 +1,40 @@
-const Squad = require('../../Models/Squad')
-const Employee = require('../../Models/Employee')
+const repSquad = require('../Repositories/Squad')
+const repEmployee = require('../Repositories/Employee')
 
 module.exports = {
-    create: function (req, res) {
-        const squad = new Squad({
+    create: async function (req, res) {
+        const squad = {
             name: req.body.name,
             responsability: req.body.responsability,
             member: req.body.member
-        });
-        squad.save(function (err) {
-            if (err)
-                res.send('Failed to create a new squad')
-            res.status(201).json(squad);
-        })
+        }
+        let result = await repSquad.create(squad)
+        console.log(result)
+        result ? res.status(201).json(squad) : res.json({ error: 'Failed to create a new squad' })
     },
 
-    addEmployee: function (req, res) {
+    get: async function (req, res) {
+        const squad = await repSquad.find(req.params.id)
+        squad ? res.json(squad) : res.json({ error: `Couldn't find the employee` })
+    },
+
+    addEmployee: async function (req, res) {
         const userSquad = { //Get the IDs to add
             empId: req.body.empId,
             squadId: req.body.squadId
         }
-        Employee.findById(userSquad.empId).exec(function (err, result) { //Get the employee on DB
-            if (err || !result)
-                res.json({ error: 'Squad not found' })
-            else if (result.squad != "") //Employee belongs to 0 or 1 squad.
-                res.json({error: 'The employee already have belongs to a squad'})
-            else {
-                console.log(`Found: ${result.name}`);
-                Squad.findById(userSquad.squadId) //Get the squad on DB
-                    .exec(function (err, Squad) {
-                        if (err || !Squad)
-                            res.json({ error: 'Squad not found' })
-                        else {
-                            console.log(result);
-                            Squad.members.push(userSquad.empId) //Add the employeeID to Squad Collection
-                            result.squad = Squad.name //Update the squad field of the employee
-                            Squad.save()
-                            result.save()
-                            console.log(`Added ${result.name} to ${Squad.name}.`);
-                            res.json({ success: 'Employee added to the squad' })
-                        }
-                    })
-            }
-        })
-    },
-
-    get: function (req, res) {
-        Squad.findById(req.params.id)
-            .lean().exec(function (err, squad) {
-                if (err)
-                    return console.error(err)
-                try {
-                    console.log(squad)
-                } catch (error) {
-                    console.log("Failed to find the user")
-                    console.log(error)
-                }
-                finally {
-                    if (squad)
-                        res.json(squad)
-                    else
-                        res.json({ error: `Couldn't find the squad` })
-                }
-            })
-    },
+        const employee = await repEmployee.find(userSquad.empId)
+        const squad = await repSquad.find(userSquad.squadId)
+        if (employee.squad || !squad) {
+            res.json({ error: 'Failed to add a employee to a new squad' })
+        }
+        else {
+            const addRes = await repSquad.addEmployee(employee.id, squad.id)
+            const updateRes = await repEmployee.addSquad(employee.id, squad.name)
+            if (addRes && updateRes)
+                res.json(updateRes)
+            else
+                res.json({ error: 'Failed to add a employee to a new squad' })
+        }
+    }
 }

@@ -5,7 +5,7 @@ module.exports = {
         try {
             // Connect to the MongoDB cluster
             await mongoose.connect(
-                'mongodb+srv://<username>:<password></password>@enterpriseapi.4wyt7.mongodb.net/enterprise?retryWrites=true&w=majority',
+                'mongodb+srv://<username>:<password>@enterpriseapi.4wyt7.mongodb.net/enterprise?retryWrites=true&w=majority',
                 { useNewUrlParser: true, useUnifiedTopology: true }
             );
             var db = mongoose.connection;

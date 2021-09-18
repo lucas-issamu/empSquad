@@ -10,6 +10,7 @@ fs.connection();
 
 app.get("/", (req, res) => {
     res.send('Welcome.')
+    res.send('How are you?')
 })
 
 const employeeRouter = require('./Routes/employee')
