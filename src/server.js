@@ -1,24 +1,24 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const con = require('../src/connection')
+const db = require('../src/connection')
+const employeeRouter = require('./Routes/employee')
+const squadRouter = require('./Routes/squad')
 const app = express()
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }))
 
-con.connection();
+db.connection().then(() => {
+    app.get("/", (req, res) => {
+        res.send('Welcome.')
+    })
 
-app.get("/", (req, res) => {
-    res.send('Welcome.')
+    app.use('/employee', employeeRouter)
+
+    app.use('/squad', squadRouter)
+
+    app.listen(3000, () => {
+        console.log('Listening on port 3000');
+    })
 })
-
-const employeeRouter = require('./Routes/employee')
-app.use('/employee', employeeRouter)
-
-const squadRouter = require('./Routes/squad')
-app.use('/squad', squadRouter)
-
-app.listen(3000), () => {
-    console.log('Listening on port 3000');
-}
 

@@ -1,6 +1,6 @@
 const express = require('express');
-const router = express.Router()
 const employee = require('../Controllers/EmployeeController')
+const router = express.Router()
 
 router.post("/create", employee.create);
 router.route("/:id")

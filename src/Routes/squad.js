@@ -1,6 +1,6 @@
 const express = require('express')
-const router = express.Router()
 const squad = require('../Controllers/SquadController')
+const router = express.Router()
 
 router.post("/create", squad.create)
 router.post("/add", squad.addEmployee)
