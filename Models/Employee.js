@@ -12,6 +12,10 @@ const employeeSchema = new Schema({
         unique: true,
         required: true
     },
+    active: {
+        type: Boolean,
+        default: true
+    },
     squad: {
         type: String,
         default: ""
