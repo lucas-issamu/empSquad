@@ -2,7 +2,7 @@ const repSquad = require('../Repositories/Squad')
 const repEmployee = require('../Repositories/Employee')
 
 module.exports = {
-    create: async function (req, res) { //TODO check informed squad
+    create: async function (req, res) {
         try {
             const employee = {
                 name: req.body.name,
@@ -13,6 +13,10 @@ module.exports = {
                 res.status(400).json({ error: 'Missing values to create a new employee' })
             else {
                 let result = await repEmployee.create(employee)
+                if (result['squad']) {
+                    let squad = await repSquad.findbyName(result['squad']) ?? {}
+                    let c_squad = await repSquad.addEmployee(result.id, squad.id) ?? await repSquad.create(result['squad'], "", result.id)
+                }
                 result ? res.status(201).json(result) : res.json({ error: 'Failed to create a new employee' })
             }
         }

@@ -1,13 +1,11 @@
 const Squad = require('../../Models/Squad')
 
 
-const create = async (newSquad) => {
-    const { name, responsability, members } = newSquad
-
+const create = async (squadName, responsability, empID) => {
     const squad = new Squad({
-        name: name,
+        name: squadName,
         responsability: responsability,
-        members: members
+        members: empID
     });
     await squad.save()
     return squad
